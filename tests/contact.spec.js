@@ -52,36 +52,13 @@ test.describe('Contact Us', () => {
   });
 
   test('submitting a filled form shows a success message', async () => {
-    await contactPage.fillContactForm({
-      name: 'Test User',
-      email: 'testuser@example.com',
-      subject: 'Test Subject',
-      message: 'This is a test message.',
-    });
-    await contactPage.submitForm();
+    await contactPage.submitContactForm(contactPage.testData);
     await expect(contactPage.successMessage).toBeVisible();
-  });
-
-  test('success message contains the word "Success"', async () => {
-    await contactPage.fillContactForm({
-      name: 'Test User',
-      email: 'testuser@example.com',
-      subject: 'Test Subject',
-      message: 'This is a test message.',
-    });
-    await contactPage.submitForm();
     await expect(contactPage.successMessage).toContainText('Success');
   });
 
   test('clicking Home after submission navigates back to home page', async ({ page }) => {
-    await contactPage.fillContactForm({
-      name: 'Test User',
-      email: 'testuser@example.com',
-      subject: 'Test Subject',
-      message: 'This is a test message.',
-    });
-    await contactPage.submitForm();
-    await page.locator('a[href="/"]').first().click();
+    await contactPage.submitAndGoHome(contactPage.testData);
     await expect(page).toHaveURL(/automationexercise\.com\/?$/);
   });
 });
