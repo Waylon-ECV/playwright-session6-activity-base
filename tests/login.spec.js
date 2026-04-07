@@ -1,30 +1,51 @@
-/**
- * Login / Signup Tests
- *
- * TODO: Implement tests for the login page (https://automationexercise.com/login).
- *
- * Suggested test cases:
- *   - Login page loads at /login
- *   - Login form fields are visible (email, password, button)
- *   - Signup form fields are visible (name, email, button)
- *   - Logging in with invalid credentials shows an error message
- *   - Submitting an empty login form triggers browser validation
- *   - Signing up with an already-registered email shows an error
- *   - Signing up with a new unique email navigates to /signup
- *   - "Login to your account" heading is visible
- *   - "New User Signup!" heading is visible
- *
- * HINT: Import and use the LoginPage page object.
- *   const LoginPage = require('../pages/LoginPage');
- *
- * HINT: Use a timestamp to generate a unique email for signup tests:
- *   const uniqueEmail = `testuser_${Date.now()}@example.com`;
- */
-
 const { test, expect } = require('@playwright/test');
+const LoginPage = require('../pages/LoginPage');
 
 test.describe('Login / Signup', () => {
-  // TODO: Add beforeEach to navigate to /login
-  // sample comment
-  // TODO: Write your tests here
+  let loginPage;
+
+  test.beforeEach(async ({ page }) => {
+    loginPage = new LoginPage(page);
+    await loginPage.goto();
+  });
+
+  test('login page loads at /login', async ({ page }) => {
+    await expect(page).toHaveURL(/login/);
+  });
+
+  test('"Login to your account" heading is visible', async ({ page }) => {
+    await expect(page.locator('h2:has-text("Login to your account")')).toBeVisible();
+  });
+
+  test('"New User Signup!" heading is visible', async ({ page }) => {
+    await expect(page.locator('h2:has-text("New User Signup!")')).toBeVisible();
+  });
+
+  test('login form fields are visible', async () => {
+    await expect(loginPage.loginEmail).toBeVisible();
+    await expect(loginPage.loginPassword).toBeVisible();
+    await expect(loginPage.loginButton).toBeVisible();
+  });
+
+  test('signup form fields are visible', async () => {
+    await expect(loginPage.signupName).toBeVisible();
+    await expect(loginPage.signupEmail).toBeVisible();
+    await expect(loginPage.signupButton).toBeVisible();
+  });
+
+  test('login with invalid credentials shows error', async () => {
+    await loginPage.login('invalid@example.com', 'wrongpassword');
+    await expect(loginPage.loginError).toBeVisible();
+  });
+
+  test('signup with already-registered email shows error', async () => {
+    await loginPage.signup('Test User', 'test@example.com');
+    await expect(loginPage.signupError).toBeVisible();
+  });
+
+  test('signup with new unique email navigates to /signup', async ({ page }) => {
+    const uniqueEmail = `testuser_${Date.now()}@example.com`;
+    await loginPage.signup('Test User', uniqueEmail);
+    await expect(page).toHaveURL(/signup/);
+  });
 });

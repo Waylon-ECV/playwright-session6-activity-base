@@ -1,42 +1,44 @@
 const BasePage = require('./BasePage');
 
-/**
- * LoginPage
- * Covers: https://automationexercise.com/login
- *
- * TODO: Define locators and methods for the login/signup page.
- *
- * Suggested locators to add:
- *   Login form:
- *     - Email input      → '[data-qa="login-email"]'
- *     - Password input   → '[data-qa="login-password"]'
- *     - Login button     → '[data-qa="login-button"]'
- *     - Error message    → 'p:has-text("Your email or password is incorrect!")'
- *
- *   Signup form:
- *     - Name input       → '[data-qa="signup-name"]'
- *     - Email input      → '[data-qa="signup-email"]'
- *     - Signup button    → '[data-qa="signup-button"]'
- *     - Error message    → 'p:has-text("Email Address already exist!")'
- *
- * Suggested methods to implement:
- *   - goto()
- *   - login(email, password)
- *   - signup(name, email)
- *   - isLoginErrorVisible()
- *   - isSignupErrorVisible()
- */
 class LoginPage extends BasePage {
   constructor(page) {
     super(page);
-    // TODO: Define your locators here
+    // Login form
+    this.loginEmail = page.locator('[data-qa="login-email"]');
+    this.loginPassword = page.locator('[data-qa="login-password"]');
+    this.loginButton = page.locator('[data-qa="login-button"]');
+    this.loginError = page.locator('p:has-text("Your email or password is incorrect!")');
+
+    // Signup form
+    this.signupName = page.locator('[data-qa="signup-name"]');
+    this.signupEmail = page.locator('[data-qa="signup-email"]');
+    this.signupButton = page.locator('[data-qa="signup-button"]');
+    this.signupError = page.locator('p:has-text("Email Address already exist!")');
   }
 
   async goto() {
     await this.navigate('/login');
   }
 
-  // TODO: Implement methods
+  async login(email, password) {
+    await this.loginEmail.fill(email);
+    await this.loginPassword.fill(password);
+    await this.loginButton.click();
+  }
+
+  async signup(name, email) {
+    await this.signupName.fill(name);
+    await this.signupEmail.fill(email);
+    await this.signupButton.click();
+  }
+
+  async isLoginErrorVisible() {
+    return this.loginError.isVisible();
+  }
+
+  async isSignupErrorVisible() {
+    return this.signupError.isVisible();
+  }
 }
 
 module.exports = LoginPage;
