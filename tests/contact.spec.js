@@ -21,9 +21,44 @@
  */
 
 const { test, expect } = require('@playwright/test');
+const ContactPage = require('../pages/ContactPage');
 
 test.describe('Contact Us', () => {
-  // TODO: Add beforeEach to navigate to /contact_us
+  let contactPage;
 
-  // TODO: Write your tests here
+  test.beforeEach(async ({ page }) => {
+    contactPage = new ContactPage(page);
+    await contactPage.goto();
+  });
+
+  test('contact page loads at /contact_us', async ({ page }) => {
+    await expect(page).toHaveURL(/contact_us/);
+  });
+
+  test('"Get In Touch" heading is visible', async ({ page }) => {
+    await expect(page.locator('h2.title.text-center').nth(1)).toContainText("Get In Touch");
+  });
+
+  test('all form fields are visible', async () => {
+    await expect(contactPage.nameInput).toBeVisible();
+    await expect(contactPage.emailInput).toBeVisible();
+    await expect(contactPage.subjectInput).toBeVisible();
+    await expect(contactPage.messageInput).toBeVisible();
+    await expect(contactPage.submitButton).toBeVisible();
+  });
+
+  test('file upload input is present', async () => {
+    await expect(contactPage.fileInput).toBeVisible();
+  });
+
+  test('submitting a filled form shows a success message', async () => {
+    await contactPage.submitContactForm(contactPage.testData);
+    await expect(contactPage.successMessage).toBeVisible();
+    await expect(contactPage.successMessage).toContainText('Success');
+  });
+
+  test('clicking Home after submission navigates back to home page', async ({ page }) => {
+    await contactPage.submitAndGoHome(contactPage.testData);
+    await expect(page).toHaveURL(/automationexercise\.com\/?$/);
+  });
 });
